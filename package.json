@@ -1,7 +1,7 @@
 {
-  "name": "cookie-login-website",
+  "name": "company-portal",
   "version": "1.0.0",
-  "description": "Website with file-based cookie login sessions (7-day persistence)",
+  "description": "Company portal with file-based cookie login (7-day sessions)",
   "main": "server.js",
   "type": "module",
   "scripts": {
