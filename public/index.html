@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Microsoft — Sign in</title>
+<title>Company Portal — Sign in</title>
 <style>
   :root{
     --bg:#f3f4f6;
@@ -30,13 +30,10 @@
     border-radius:0;
     padding:60px;
     width:100%;
-    max-width:1280px;
+    max-width:480px;
     box-shadow:0 4px 40px rgba(0,0,0,.08);
     border:1px solid #ddd;
   }
-
-  .logo{width:160px;margin-bottom:40px;}
-  .logo img{width:100%;height:auto;display:block;}
 
   h3{
     margin:0 0 6px;
@@ -82,48 +79,42 @@
   }
   .btn:hover{background:#2150a1;transform:translateY(-1px);}
 
-  .link{color:var(--accent);text-decoration:none;font-weight:600;font-size:15px;}
   .error{color:var(--danger);font-size:14px;margin-top:8px;clear:both;}
   .small{font-size:14px;color:var(--muted);margin-top:18px;clear:both;}
 
   footer{
-    margin-top:100px;
+    margin-top:80px;
     font-size:15px;
     color:var(--muted);
     text-align:center;
   }
   footer a{color:var(--accent);text-decoration:none;font-weight:600;}
 
-  @media(max-width:900px){
+  @media(max-width:600px){
     .card{padding:40px 20px;max-width:95%;border:none;box-shadow:none;}
     .btn{float:none;width:100%;padding:14px;margin-top:28px;}
-    footer{margin-top:80px;}
   }
 </style>
 </head>
 <body>
 <section class="card">
-  <div class="logo">
-    <img src="https://res.cloudinary.com/dpabidaqx/image/upload/c_scale,w_51/v1760204872/microsoft_logo_564db913a7fa0ca42727161c6d031bef_ztuaqb.svg" alt="Company Logo">
-  </div>
-
   <h3>Sign in</h3>
   <p class="subtitle">Access your company portal securely</p>
 
   <form id="loginForm" novalidate>
-    <!-- Step 1 -->
+    <!-- Step 1: Email -->
     <div id="emailStep">
       <input id="email" type="email" placeholder="you@company.com" required />
       <div class="error" id="emailError" style="display:none"></div>
       <button class="btn" type="button" id="nextBtn">Next</button>
     </div>
 
-    <!-- Step 2 -->
+    <!-- Step 2: Password -->
     <div id="passwordStep" style="display:none;">
       <input id="password" type="password" placeholder="Enter your password" required minlength="4" />
       <div class="error" id="pwError" style="display:none"></div>
       <button class="btn" type="submit">Sign in</button>
-      <div class="small"><a href="#" class="link">Forgot password?</a></div>
+      <div class="small"><a href="#" style="color:var(--accent);">Forgot password?</a></div>
     </div>
   </form>
 
@@ -133,60 +124,63 @@
 </section>
 
 <script>
-  const nextBtn=document.getElementById('nextBtn');
-  const emailStep=document.getElementById('emailStep');
-  const passwordStep=document.getElementById('passwordStep');
-  const emailInput=document.getElementById('email');
-  const passwordInput=document.getElementById('password');
-  const emailError=document.getElementById('emailError');
-  const pwError=document.getElementById('pwError');
-  const form=document.getElementById('loginForm');
-  const validEmail=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  // Elements
+  const nextBtn = document.getElementById("nextBtn");
+  const emailStep = document.getElementById("emailStep");
+  const passwordStep = document.getElementById("passwordStep");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const emailError = document.getElementById("emailError");
+  const pwError = document.getElementById("pwError");
+  const form = document.getElementById("loginForm");
 
-  nextBtn.addEventListener('click',()=>{
-    emailError.style.display='none';
-    const email=emailInput.value.trim();
-    if(!validEmail.test(email)){
-      emailError.textContent='Please enter a valid email address.';
-      emailError.style.display='block';
+  const validEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+
+  // Step 1 → Step 2
+  nextBtn.addEventListener("click", () => {
+    emailError.style.display = "none";
+    const email = emailInput.value.trim();
+    if (!validEmail.test(email)) {
+      emailError.textContent = "Please enter a valid email address.";
+      emailError.style.display = "block";
       return;
     }
-    emailStep.style.display='none';
-    passwordStep.style.display='block';
+    emailStep.style.display = "none";
+    passwordStep.style.display = "block";
     passwordInput.focus();
   });
 
-  form.addEventListener('submit',async e=>{
+  // Submit (Step 2)
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    pwError.style.display='none';
-    const email=emailInput.value.trim();
-    const password=passwordInput.value.trim();
+    pwError.style.display = "none";
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    if(!password){
-      pwError.textContent='Please enter your password.';
-      pwError.style.display='block';
+    if (!password) {
+      pwError.textContent = "Please enter your password.";
+      pwError.style.display = "block";
       return;
     }
 
     try {
-      // Send login request to backend
-      const res = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: email, password })
       });
 
-      if(res.ok){
-        // Redirect to dashboard if successful
-        window.location.href = '/dashboard.html';
+      if (res.ok) {
+        // Login success → go to dashboard
+        window.location.href = "/dashboard.html";
       } else {
         const msg = await res.text();
-        pwError.textContent = msg || 'Invalid credentials. Please try again.';
-        pwError.style.display = 'block';
+        pwError.textContent = msg || "Invalid credentials. Please try again.";
+        pwError.style.display = "block";
       }
     } catch (err) {
-      pwError.textContent = 'Network error. Please try again.';
-      pwError.style.display = 'block';
+      pwError.textContent = "Network error. Please try again.";
+      pwError.style.display = "block";
       console.error(err);
     }
   });
