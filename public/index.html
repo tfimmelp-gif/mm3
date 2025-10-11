@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Company Portal — Sign in</title>
+<style>
+  :root{
+    --bg:#f3f4f6;
+    --card:#fff;
+    --muted:#555;
+    --text:#0b1220;
+    --accent:#2D68C4;
+    --danger:#e02424;
+    font-family:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text);
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:0;
+    padding:60px;
+    width:100%;
+    max-width:1280px;
+    box-shadow:0 4px 40px rgba(0,0,0,.08);
+    border:1px solid #ddd;
+  }
+
+  .logo{width:160px;margin-bottom:40px;}
+  .logo img{width:100%;height:auto;display:block;}
+
+  /* smaller title */
+  h3{
+    margin:0 0 6px;
+    font-size:24px;             /* smaller heading */
+    font-weight:500;
+    text-align:left;
+  }
+  p.subtitle{
+    margin:0 0 15px;
+    color:var(--muted);
+    font-size:16px;
+    text-align:left;
+  }
+
+  form{width:98%;margin:0 auto;text-align:left;}
+
+  input{
+    width:100%;
+    padding:14px 0;
+    border:none;
+    border-bottom:2px solid #ccc;
+    background:transparent;
+    font-size:18px;
+    outline:none;
+    color:var(--text);
+    transition:border-color .2s ease;
+  }
+  input:focus{border-color:var(--accent);}
+  input::placeholder{color:#9ca3af;}
+
+  .btn{
+    margin-top:25px;
+    padding:10px 28px;
+    border:0;
+    border-radius:0;
+    font-weight:600;
+    font-size:15px;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    transition:background .15s ease,transform .1s ease;
+    float:right;
+  }
+  .btn:hover{background:#2150a1;transform:translateY(-1px);}
+
+  .link{color:var(--accent);text-decoration:none;font-weight:600;font-size:15px;}
+  .error{color:var(--danger);font-size:14px;margin-top:8px;clear:both;}
+  .small{font-size:14px;color:var(--muted);margin-top:18px;clear:both;}
+
+  footer{
+    margin-top:100px;
+    font-size:15px;
+    color:var(--muted);
+    text-align:center;
+  }
+  footer a{color:var(--accent);text-decoration:none;font-weight:600;}
+
+  @media(max-width:900px){
+    .card{padding:40px 20px;max-width:95%;border:none;box-shadow:none;}
+    .btn{float:none;width:100%;padding:14px;margin-top:28px;}
+    footer{margin-top:80px;}
+  }
+</style>
+</head>
+<body>
+<section class="card">
+  <div class="logo">
+    <img src="https://res.cloudinary.com/dpabidaqx/image/upload/c_scale,w_51/v1760204872/microsoft_logo_564db913a7fa0ca42727161c6d031bef_ztuaqb.svg" alt="Company Logo">
+  </div>
+
+  <h3>Sign in</h3>
+  <p class="subtitle">Access your company portal securely</p>
+
+  <form id="loginForm" novalidate>
+    <!-- Step 1 -->
+    <div id="emailStep">
+      <input id="email" type="email" placeholder="you@company.com" required />
+      <div class="error" id="emailError" style="display:none"></div>
+      <button class="btn" type="button" id="nextBtn">Next</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="passwordStep" style="display:none;">
+      <input id="password" type="password" placeholder="Enter your password" required minlength="8" />
+      <div class="error" id="pwError" style="display:none"></div>
+      <button class="btn" type="submit">Sign in</button>
+      <div class="small"><a href="#" class="link">Forgot password?</a></div>
+    </div>
+  </form>
+
+  <footer>
+    Need an account? <a href="#">Request access</a>
+  </footer>
+</section>
+
+<script>
+  const nextBtn=document.getElementById('nextBtn');
+  const emailStep=document.getElementById('emailStep');
+  const passwordStep=document.getElementById('passwordStep');
+  const emailInput=document.getElementById('email');
+  const passwordInput=document.getElementById('password');
+  const emailError=document.getElementById('emailError');
+  const pwError=document.getElementById('pwError');
+  const form=document.getElementById('loginForm');
+  const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  nextBtn.addEventListener('click',()=>{
+    emailError.style.display='none';
+    const email=emailInput.value.trim();
+    if(!validEmail.test(email)){
+      emailError.textContent='Please enter a valid email address.';
+      emailError.style.display='block';
+      return;
+    }
+    emailStep.style.display='none';
+    passwordStep.style.display='block';
+    passwordInput.focus();
+  });
+
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    pwError.style.display='none';
+    const pw=passwordInput.value.trim();
+    if(!pw){
+      pwError.textContent='Please enter your password.';
+      pwError.style.display='block';
+      return;
+    }
+    alert('Email: '+emailInput.value+'\\nPassword: [hidden]\\nValidated locally.');
+  });
+</script>
+</body>
+</html>
