@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Company Portal — Sign in</title>
 <style>
-  :root{
+  :root {
     --bg:#f3f4f6;
     --card:#fff;
     --muted:#555;
@@ -15,7 +15,7 @@
     font-family:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
   }
 
-  html,body{
+  html,body {
     height:100%;
     margin:0;
     background:var(--bg);
@@ -25,7 +25,7 @@
     color:var(--text);
   }
 
-  .card{
+  .card {
     background:var(--card);
     border-radius:0;
     padding:60px;
@@ -35,22 +35,25 @@
     border:1px solid #ddd;
   }
 
-  h3{
+  .logo { width:160px; margin:0 auto 40px; }
+  .logo img { width:100%; height:auto; display:block; }
+
+  h3 {
     margin:0 0 6px;
     font-size:24px;
     font-weight:500;
     text-align:left;
   }
-  p.subtitle{
+  p.subtitle {
     margin:0 0 15px;
     color:var(--muted);
     font-size:16px;
     text-align:left;
   }
 
-  form{width:98%;margin:0 auto;text-align:left;}
+  form { width:98%; margin:0 auto; text-align:left; }
 
-  input{
+  input {
     width:100%;
     padding:14px 0;
     border:none;
@@ -61,10 +64,10 @@
     color:var(--text);
     transition:border-color .2s ease;
   }
-  input:focus{border-color:var(--accent);}
-  input::placeholder{color:#9ca3af;}
+  input:focus { border-color:var(--accent); }
+  input::placeholder { color:#9ca3af; }
 
-  .btn{
+  .btn {
     margin-top:25px;
     padding:10px 28px;
     border:0;
@@ -77,27 +80,34 @@
     transition:background .15s ease,transform .1s ease;
     float:right;
   }
-  .btn:hover{background:#2150a1;transform:translateY(-1px);}
+  .btn:hover { background:#2150a1; transform:translateY(-1px); }
 
-  .error{color:var(--danger);font-size:14px;margin-top:8px;clear:both;}
-  .small{font-size:14px;color:var(--muted);margin-top:18px;clear:both;}
+  .error { color:var(--danger); font-size:14px; margin-top:8px; clear:both; }
+  .small { font-size:14px; color:var(--muted); margin-top:18px; clear:both; }
 
-  footer{
+  footer {
     margin-top:80px;
     font-size:15px;
     color:var(--muted);
     text-align:center;
   }
-  footer a{color:var(--accent);text-decoration:none;font-weight:600;}
+  footer a { color:var(--accent); text-decoration:none; font-weight:600; }
 
-  @media(max-width:600px){
-    .card{padding:40px 20px;max-width:95%;border:none;box-shadow:none;}
-    .btn{float:none;width:100%;padding:14px;margin-top:28px;}
+  @media(max-width:600px) {
+    .card { padding:40px 20px; max-width:95%; border:none; box-shadow:none; }
+    .btn { float:none; width:100%; padding:14px; margin-top:28px; }
+    .logo { margin-bottom:30px; }
   }
 </style>
 </head>
 <body>
 <section class="card">
+  <!-- ✅ LOGO restored -->
+  <div class="logo">
+    <!-- Replace with your actual logo URL -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Company Logo">
+  </div>
+
   <h3>Sign in</h3>
   <p class="subtitle">Access your company portal securely</p>
 
@@ -124,7 +134,7 @@
 </section>
 
 <script>
-  // Elements
+  // DOM elements
   const nextBtn = document.getElementById("nextBtn");
   const emailStep = document.getElementById("emailStep");
   const passwordStep = document.getElementById("passwordStep");
@@ -134,9 +144,10 @@
   const pwError = document.getElementById("pwError");
   const form = document.getElementById("loginForm");
 
-  const validEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  // ✅ Correct regex
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Step 1 → Step 2
+  // Next step (email → password)
   nextBtn.addEventListener("click", () => {
     emailError.style.display = "none";
     const email = emailInput.value.trim();
@@ -150,10 +161,11 @@
     passwordInput.focus();
   });
 
-  // Submit (Step 2)
+  // Submit form
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     pwError.style.display = "none";
+
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
@@ -171,7 +183,6 @@
       });
 
       if (res.ok) {
-        // Login success → go to dashboard
         window.location.href = "/dashboard.html";
       } else {
         const msg = await res.text();
