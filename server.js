@@ -1,3 +1,7 @@
+// ===============================
+// ✅ Company Portal — Server.js
+// ===============================
+
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -8,35 +12,22 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const __dirname = path.resolve();
 
-// ──────────────────────────────────────────────
-// MIDDLEWARE
-// ──────────────────────────────────────────────
+// Middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ──────────────────────────────────────────────
-// SESSIONS
-// ──────────────────────────────────────────────
+// Sessions folder
 const SESSIONS_DIR = path.join(__dirname, "sessions");
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR);
 
-const USERS = { "user1@company.com": "1234", "admin@company.com": "pass" };
+// Mock users
+const USERS = {
+  "user1@company.com": "1234",
+  "admin@company.com": "pass"
+};
 
-// Clean expired sessions on startup
-fs.readdirSync(SESSIONS_DIR).forEach(file => {
-  const filePath = path.join(SESSIONS_DIR, file);
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (new Date(data.expiresAt) < new Date()) {
-      fs.unlinkSync(filePath);
-      console.log(`🧹 Removed expired session: ${file}`);
-    }
-  } catch {
-    fs.unlinkSync(filePath);
-  }
-});
-
+// Create new session file
 function createSessionFile(token, username) {
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
   const sessionData = {
@@ -46,8 +37,11 @@ function createSessionFile(token, username) {
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
   };
   fs.writeFileSync(filePath, JSON.stringify(sessionData, null, 2));
+  console.log(`🗂 Session created → ${filePath}`);
+  return filePath;
 }
 
+// Retrieve session
 function getSessionFromFile(token) {
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
   if (!fs.existsSync(filePath)) return null;
@@ -63,31 +57,39 @@ function getSessionFromFile(token) {
   }
 }
 
-// ──────────────────────────────────────────────
-// LOGIN
-// ──────────────────────────────────────────────
+// =========================
+// 🚪 Login Route
+// =========================
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   console.log(`🔐 Login attempt: ${username}`);
 
-  if (USERS[username] && USERS[username] === password) {
-    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-    createSessionFile(token, username);
-    res.cookie("session_id", token, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
-    console.log(`✅ Login success for ${username}`);
-    return res.sendStatus(200);
+  if (!USERS[username]) {
+    console.log("❌ Unknown email");
+    return res.status(401).send("Email not recognized.");
   }
 
-  console.log(`❌ Invalid login for ${username}`);
-  res.status(401).send("Invalid credentials");
+  if (USERS[username] !== password) {
+    console.log("⚠️ Wrong password entered");
+    return res.status(401).send("Invalid password. Please try again.");
+  }
+
+  // Successful login
+  const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  createSessionFile(token, username);
+
+  res.cookie("session_id", token, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  console.log(`✅ Login success for ${username}`);
+  res.status(200).json({ message: "Login successful", sessionFile: `/download/${token}` });
 });
 
-// ──────────────────────────────────────────────
-// AUTH GUARD
-// ──────────────────────────────────────────────
+// =========================
+// 🔐 Middleware
+// =========================
 function requireAuth(req, res, next) {
   const token = req.cookies.session_id;
   if (!token) return res.redirect("/");
@@ -100,16 +102,29 @@ function requireAuth(req, res, next) {
   res.redirect("/");
 }
 
-// ──────────────────────────────────────────────
-// PROTECTED ROUTE
-// ──────────────────────────────────────────────
+// =========================
+// 🖥 Protected Dashboard
+// =========================
 app.get("/dashboard.html", requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/dashboard.html"));
 });
 
-// ──────────────────────────────────────────────
-// LOGOUT
-// ──────────────────────────────────────────────
+// =========================
+// 📦 Download Session File
+// =========================
+app.get("/download/:token", (req, res) => {
+  const token = req.params.token;
+  const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, `session_${token}.json`);
+  } else {
+    res.status(404).send("Session file not found.");
+  }
+});
+
+// =========================
+// 🚪 Logout
+// =========================
 app.post("/logout", (req, res) => {
   const token = req.cookies.session_id;
   if (token) {
@@ -120,10 +135,9 @@ app.post("/logout", (req, res) => {
   res.sendStatus(200);
 });
 
-// ──────────────────────────────────────────────
-// START
-// ──────────────────────────────────────────────
+// =========================
+// 🚀 Start Server
+// =========================
 app.listen(PORT, () => {
   console.log(`✅ Company Portal running on http://localhost:${PORT}`);
 });
-
