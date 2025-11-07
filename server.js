@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const SESSIONS_DIR = path.join(__dirname, "sessions");
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR);
 
-// Track per-user attempts
+// Track user attempts
 const attempts = {};
 
 function createSessionFile(token, username) {
@@ -41,12 +41,12 @@ app.post("/login", (req, res) => {
 
   console.log(`🔐 Attempt ${attempts[username]} for ${username}`);
 
-  // First attempt rejected
+  // First password attempt fails
   if (attempts[username] < 2) {
     return res.status(401).send("Incorrect password. Please try again.");
   }
 
-  // Second attempt accepted
+  // Second attempt succeeds
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   createSessionFile(token, username);
   res.cookie("session_id", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
@@ -59,4 +59,4 @@ app.get("/dashboard.html", (req, res) => {
 });
 
 // ------------------ START SERVER ------------------
-app.listen(PORT, () => console.log(`✅ Running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`✅ Running on http://localhost:${PORT}`));
