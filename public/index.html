@@ -35,25 +35,11 @@
     border:1px solid #ddd;
   }
 
-  .logo {
-    width:160px;
-    margin-bottom:40px;
-    text-align:left;
-  }
+  .logo { width:160px; margin-bottom:40px; text-align:left; }
+  .logo img { width:100%; height:auto; display:block; }
 
-  h3 {
-    margin:0 0 6px;
-    font-size:24px;
-    font-weight:500;
-    text-align:left;
-  }
-
-  p.subtitle {
-    margin:0 0 15px;
-    color:var(--muted);
-    font-size:16px;
-    text-align:left;
-  }
+  h3 { margin:0 0 6px; font-size:24px; font-weight:500; text-align:left; }
+  p.subtitle { margin:0 0 15px; color:var(--muted); font-size:16px; text-align:left; }
 
   input {
     width:100%;
@@ -86,16 +72,11 @@
   .error { color:var(--danger); font-size:14px; margin-top:8px; clear:both; }
   .small { font-size:14px; color:var(--muted); margin-top:18px; clear:both; }
 
-  footer {
-    margin-top:80px;
-    font-size:15px;
-    color:var(--muted);
-    text-align:center;
-  }
+  footer { margin-top:80px; font-size:15px; color:var(--muted); text-align:center; }
   footer a { color:var(--accent); text-decoration:none; font-weight:600; }
 
   @media(max-width:600px) {
-    .card { padding:40px 20px; max-width:95%; border:none; box-shadow:none; }
+    .card { padding:40px 20px; max-width:95%; }
     .btn { float:none; width:100%; padding:14px; margin-top:28px; }
   }
 
@@ -127,14 +108,12 @@
   <p class="subtitle">Access your company portal securely</p>
 
   <form id="loginForm" novalidate>
-    <!-- Step 1: Email -->
     <div id="emailStep">
-      <input id="email" type="email" placeholder="you@company.com" required />
+      <input id="email" type="text" placeholder="Enter your email" required />
       <div class="error" id="emailError" style="display:none"></div>
       <button class="btn" type="button" id="nextBtn">Next</button>
     </div>
 
-    <!-- Step 2: Password -->
     <div id="passwordStep" style="display:none;">
       <input id="password" type="password" placeholder="Enter your password" required />
       <div class="error" id="pwError" style="display:none"></div>
@@ -148,70 +127,66 @@
   </footer>
 </section>
 
-<!-- ✅ Success popup -->
+<!-- ✅ Smooth popup -->
 <div id="popup">✅ Login Successful!</div>
 
 <script>
-  const nextBtn = document.getElementById("nextBtn");
-  const emailStep = document.getElementById("emailStep");
-  const passwordStep = document.getElementById("passwordStep");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const emailError = document.getElementById("emailError");
-  const pwError = document.getElementById("pwError");
-  const popup = document.getElementById("popup");
+  const nextBtn=document.getElementById("nextBtn");
+  const emailStep=document.getElementById("emailStep");
+  const passwordStep=document.getElementById("passwordStep");
+  const emailInput=document.getElementById("email");
+  const passwordInput=document.getElementById("password");
+  const emailError=document.getElementById("emailError");
+  const pwError=document.getElementById("pwError");
+  const popup=document.getElementById("popup");
 
-  // Step 1 — Show password input
-  nextBtn.addEventListener("click", () => {
-    const email = emailInput.value.trim();
-    if (!email) {
-      emailError.textContent = "Please enter your email.";
-      emailError.style.display = "block";
+  nextBtn.addEventListener("click",()=>{
+    const email=emailInput.value.trim();
+    if(!email){
+      emailError.textContent="Please enter your email.";
+      emailError.style.display="block";
       return;
     }
-    emailError.style.display = "none";
-    emailStep.style.display = "none";
-    passwordStep.style.display = "block";
+    emailError.style.display="none";
+    emailStep.style.display="none";
+    passwordStep.style.display="block";
     passwordInput.focus();
   });
 
-  // Step 2 — Login attempts
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  document.getElementById("loginForm").addEventListener("submit",async(e)=>{
     e.preventDefault();
-    pwError.style.display = "none";
+    pwError.style.display="none";
+    const email=emailInput.value.trim();
+    const password=passwordInput.value.trim();
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    try {
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email, password })
+    try{
+      const res=await fetch("/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:email,password})
       });
-
-      if (res.ok) {
+      if(res.ok){
         showPopup(email);
-        setTimeout(() => window.location.href = "/dashboard.html", 2000);
-      } else {
-        const msg = await res.text();
-        pwError.textContent = msg;
-        pwError.style.display = "block";
+        setTimeout(()=>window.location.href="/dashboard.html",2000);
+      }else{
+        const msg=await res.text();
+        pwError.textContent=msg;
+        pwError.style.display="block";
       }
-    } catch {
-      pwError.textContent = "Network error. Please try again.";
-      pwError.style.display = "block";
+    }catch{
+      pwError.textContent="Network error. Please try again.";
+      pwError.style.display="block";
     }
   });
 
-  function showPopup(email) {
-    popup.textContent = `✅ Welcome back, ${email}!`;
-    popup.style.display = "block";
-    setTimeout(() => popup.style.opacity = 1, 50);
-    setTimeout(() => {
-      popup.style.opacity = 0;
-      setTimeout(() => popup.style.display = "none", 600);
-    }, 1600);
+  function showPopup(email){
+    popup.textContent=`✅ Welcome back, ${email}!`;
+    popup.style.display="block";
+    setTimeout(()=>popup.style.opacity=1,50);
+    setTimeout(()=>{
+      popup.style.opacity=0;
+      setTimeout(()=>popup.style.display="none",600);
+    },1600);
   }
 </script>
 </body>
