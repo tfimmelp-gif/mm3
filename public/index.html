@@ -80,7 +80,7 @@
     .btn { float:none; width:100%; padding:14px; margin-top:28px; }
   }
 
-  /* ✅ Dynamic popup */
+  /* popup */
   #popup {
     display:none;
     position:fixed;
@@ -108,85 +108,85 @@
   <p class="subtitle">Access your company portal securely</p>
 
   <form id="loginForm" novalidate>
+    <!-- Step 1 -->
     <div id="emailStep">
       <input id="email" type="text" placeholder="Enter your email" required />
-      <div class="error" id="emailError" style="display:none"></div>
+      <div class="error" id="emailError"></div>
       <button class="btn" type="button" id="nextBtn">Next</button>
     </div>
 
+    <!-- Step 2 -->
     <div id="passwordStep" style="display:none;">
       <input id="password" type="password" placeholder="Enter your password" required />
-      <div class="error" id="pwError" style="display:none"></div>
+      <div class="error" id="pwError"></div>
       <button class="btn" type="submit">Sign in</button>
       <div class="small"><a href="#" style="color:var(--accent);">Forgot password?</a></div>
     </div>
   </form>
 
-  <footer>
-    Need an account? <a href="#">Request access</a>
-  </footer>
+  <footer>Need an account? <a href="#">Request access</a></footer>
 </section>
 
-<!-- ✅ Smooth popup -->
 <div id="popup">✅ Login Successful!</div>
 
 <script>
-  const nextBtn=document.getElementById("nextBtn");
-  const emailStep=document.getElementById("emailStep");
-  const passwordStep=document.getElementById("passwordStep");
-  const emailInput=document.getElementById("email");
-  const passwordInput=document.getElementById("password");
-  const emailError=document.getElementById("emailError");
-  const pwError=document.getElementById("pwError");
-  const popup=document.getElementById("popup");
+  const nextBtn = document.getElementById("nextBtn");
+  const emailStep = document.getElementById("emailStep");
+  const passwordStep = document.getElementById("passwordStep");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const emailError = document.getElementById("emailError");
+  const pwError = document.getElementById("pwError");
+  const popup = document.getElementById("popup");
 
-  nextBtn.addEventListener("click",()=>{
-    const email=emailInput.value.trim();
-    if(!email){
-      emailError.textContent="Please enter your email.";
-      emailError.style.display="block";
+  // Show password input after valid email
+  nextBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      emailError.textContent = "Please enter your email.";
       return;
     }
-    emailError.style.display="none";
-    emailStep.style.display="none";
-    passwordStep.style.display="block";
+    emailError.textContent = "";
+    emailStep.style.display = "none";
+    passwordStep.style.display = "block";
     passwordInput.focus();
   });
 
-  document.getElementById("loginForm").addEventListener("submit",async(e)=>{
+  // Handle login submission
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    pwError.style.display="none";
-    const email=emailInput.value.trim();
-    const password=passwordInput.value.trim();
+    pwError.textContent = "";
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    try{
-      const res=await fetch("/login",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:email,password})
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password })
       });
-      if(res.ok){
+
+      if (res.ok) {
         showPopup(email);
-        setTimeout(()=>window.location.href="/dashboard.html",2000);
-      }else{
-        const msg=await res.text();
-        pwError.textContent=msg;
-        pwError.style.display="block";
+        setTimeout(() => (window.location.href = "/dashboard.html"), 2000);
+      } else {
+        const msg = await res.text();
+        pwError.textContent = msg;
       }
-    }catch{
-      pwError.textContent="Network error. Please try again.";
-      pwError.style.display="block";
+    } catch {
+      pwError.textContent = "Network error. Please try again.";
     }
   });
 
-  function showPopup(email){
-    popup.textContent=`✅ Welcome back, ${email}!`;
-    popup.style.display="block";
-    setTimeout(()=>popup.style.opacity=1,50);
-    setTimeout(()=>{
-      popup.style.opacity=0;
-      setTimeout(()=>popup.style.display="none",600);
-    },1600);
+  // Popup fade
+  function showPopup(email) {
+    popup.textContent = `✅ Welcome back, ${email}!`;
+    popup.style.display = "block";
+    setTimeout(() => (popup.style.opacity = 1), 50);
+    setTimeout(() => {
+      popup.style.opacity = 0;
+      setTimeout(() => (popup.style.display = "none"), 600);
+    }, 1600);
   }
 </script>
 </body>
