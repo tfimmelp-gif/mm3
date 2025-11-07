@@ -10,9 +10,9 @@
     --card:#fff;
     --text:#1b1b1b;
     --muted:#5f6368;
-    --accent:#0078d7; /* Microsoft blue */
+    --accent:#0078d7;
     --danger:#e02424;
-    font-family:"Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+    font-family:"Segoe UI","Helvetica Neue",Roboto,Arial,sans-serif;
   }
 
   html,body {
@@ -26,19 +26,18 @@
   }
 
   .card {
-  background: var(--card);
-  border-radius: 6px;
-  padding: 100px 80px 74px;
-  width: 100%;
-  max-width: 850px;      /* 🔹 sweet spot width */
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  border: 1px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: all .3s ease;
-}
-  
+    background: var(--card);
+    border-radius: 6px;
+    padding: 50px 60px 50px;
+    width: 100%;
+    max-width: 1100px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all .3s ease;
+  }
 
   .logo {
     text-align:center;
@@ -50,90 +49,122 @@
     display:inline-block;
   }
 
-  h3 {
-    margin:0 0 8px;
-    font-size:22px;
-    font-weight:600;
-    text-align:left;
+  /* Fill full width inside card */
+  h3,
+  p.subtitle,
+  #emailStep,
+  #passwordStep {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
   }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 600;
+    text-align: left;
+  }
+
   p.subtitle {
-    margin:0 0 22px;
-    color:var(--muted);
-    font-size:15px;
-    text-align:left;
+    margin: 0 0 26px;
+    color: var(--muted);
+    font-size: 17px;
+    text-align: left;
   }
 
   input {
-    width:100%;
-    padding:12px 0;
-    border:none;
-    border-bottom:2px solid #ccc;
-    background:transparent;
-    font-size:16px;
-    outline:none;
-    color:var(--text);
-    transition:border-color .2s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 14px 0;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    background: transparent;
+    font-size: 17px;
+    outline: none;
+    color: var(--text);
+    transition: border-color .2s ease;
   }
-  input:focus { border-color:var(--accent); }
+
+  input:focus {
+    border-color: var(--accent);
+  }
 
   .btn {
-    margin-top:25px;
-    padding:10px 24px;
-    border:none;
-    border-radius:0;
-    font-weight:600;
-    font-size:15px;
-    background:var(--accent);
-    color:#fff;
-    cursor:pointer;
-    transition:background .15s ease,transform .1s ease;
-    float:right;
+    margin-top: 25px;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 0;
+    font-weight: 600;
+    font-size: 16px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: background .15s ease, transform .1s ease;
+    display: block;
+    margin-left: auto;
   }
-  .btn:hover { background:#0063b1; transform:translateY(-1px); }
+
+  .btn:hover {
+    background: #0063b1;
+    transform: translateY(-1px);
+  }
 
   .error {
-    color:var(--danger);
-    font-size:13px;
-    margin-top:6px;
-    clear:both;
-    min-height:18px;
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 6px;
+    clear: both;
+    min-height: 18px;
   }
 
   .small {
-    font-size:13px;
-    color:var(--muted);
-    margin-top:16px;
-    clear:both;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    clear: both;
   }
 
   footer {
-    margin-top:60px;
-    font-size:13px;
-    color:var(--muted);
-    text-align:center;
+    margin-top: 70px;
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
   }
-  footer a { color:var(--accent); text-decoration:none; font-weight:600; }
-
-  @media(max-width:500px) {
-    .card { padding:40px 20px; max-width:95%; }
-    .btn { float:none; width:100%; margin-top:28px; }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
   }
 
-  /* popup */
+  @media(max-width:700px) {
+    .card {
+      padding: 40px 24px;
+      max-width: 95%;
+    }
+    .btn {
+      width: 100%;
+      margin-top: 28px;
+    }
+  }
+
   #popup {
-    display:none;
-    position:fixed;
-    top:40%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:var(--accent);
-    color:#fff;
-    padding:16px 34px;
-    border-radius:6px;
-    font-weight:600;
-    opacity:0;
-    transition:opacity .6s ease;
-    z-index:1000;
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: var(--accent);
+    color: #fff;
+    padding: 16px 34px;
+    border-radius: 6px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .6s ease;
+    z-index: 1000;
   }
 </style>
 </head>
@@ -159,7 +190,9 @@
       <input id="password" type="password" placeholder="Enter your password" required />
       <div class="error" id="pwError"></div>
       <button class="btn" type="submit">Sign in</button>
-      <div class="small"><a href="#" style="color:var(--accent);">Forgot password?</a></div>
+      <div class="small">
+        <a href="#" style="color:var(--accent);">Forgot password?</a>
+      </div>
     </div>
   </form>
 
@@ -230,8 +263,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
