@@ -8,19 +8,26 @@
   :root {
     --bg:#f3f4f6;
     --card:#fff;
+    --muted:#555;
+    --text:#0b1220;
     --accent:#2D68C4;
     --danger:#e02424;
     font-family:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
   }
 
-  html,body{
-    height:100%;margin:0;
+  html,body {
+    height:100%;
+    margin:0;
     background:var(--bg);
-    display:flex;align-items:center;justify-content:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text);
   }
 
-  .card{
+  .card {
     background:var(--card);
+    border-radius:0;
     padding:60px;
     width:100%;
     max-width:480px;
@@ -28,33 +35,78 @@
     border:1px solid #ddd;
   }
 
-  .logo{width:160px;margin-bottom:40px;text-align:left;}
-  input{
-    width:100%;padding:14px 0;
-    border:none;border-bottom:2px solid #ccc;
-    background:transparent;font-size:18px;
-    outline:none;
+  .logo {
+    width:160px;
+    margin-bottom:40px;
+    text-align:left;
   }
-  input:focus{border-color:var(--accent);}
-  .btn{
-    margin-top:25px;padding:10px 28px;
-    background:var(--accent);color:#fff;
-    font-weight:600;border:none;cursor:pointer;
-    transition:background .15s ease,transform .1s ease;
-  }
-  .btn:hover{background:#2150a1;transform:translateY(-1px);}
-  .error{color:var(--danger);font-size:14px;margin-top:8px;}
-  footer{text-align:center;color:#666;margin-top:60px;}
-  a{color:var(--accent);text-decoration:none;}
 
-  /* popup animation */
-  #popup{
+  h3 {
+    margin:0 0 6px;
+    font-size:24px;
+    font-weight:500;
+    text-align:left;
+  }
+
+  p.subtitle {
+    margin:0 0 15px;
+    color:var(--muted);
+    font-size:16px;
+    text-align:left;
+  }
+
+  input {
+    width:100%;
+    padding:14px 0;
+    border:none;
+    border-bottom:2px solid #ccc;
+    background:transparent;
+    font-size:18px;
+    outline:none;
+    color:var(--text);
+    transition:border-color .2s ease;
+  }
+  input:focus { border-color:var(--accent); }
+
+  .btn {
+    margin-top:25px;
+    padding:10px 28px;
+    border:0;
+    border-radius:0;
+    font-weight:600;
+    font-size:15px;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    transition:background .15s ease,transform .1s ease;
+    float:right;
+  }
+  .btn:hover { background:#2150a1; transform:translateY(-1px); }
+
+  .error { color:var(--danger); font-size:14px; margin-top:8px; clear:both; }
+  .small { font-size:14px; color:var(--muted); margin-top:18px; clear:both; }
+
+  footer {
+    margin-top:80px;
+    font-size:15px;
+    color:var(--muted);
+    text-align:center;
+  }
+  footer a { color:var(--accent); text-decoration:none; font-weight:600; }
+
+  @media(max-width:600px) {
+    .card { padding:40px 20px; max-width:95%; border:none; box-shadow:none; }
+    .btn { float:none; width:100%; padding:14px; margin-top:28px; }
+  }
+
+  /* ✅ Dynamic popup */
+  #popup {
     display:none;
     position:fixed;
     top:40%;
     left:50%;
     transform:translate(-50%,-50%);
-    background:#2D68C4;
+    background:var(--accent);
     color:#fff;
     padding:18px 36px;
     border-radius:8px;
@@ -68,79 +120,98 @@
 <body>
 <section class="card">
   <div class="logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" width="160" alt="Logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Company Logo">
   </div>
-  <h3>Sign in</h3>
 
-  <form id="loginForm">
+  <h3>Sign in</h3>
+  <p class="subtitle">Access your company portal securely</p>
+
+  <form id="loginForm" novalidate>
+    <!-- Step 1: Email -->
     <div id="emailStep">
-      <input id="email" type="text" placeholder="Enter email" required>
-      <div class="error" id="emailErr"></div>
+      <input id="email" type="email" placeholder="you@company.com" required />
+      <div class="error" id="emailError" style="display:none"></div>
       <button class="btn" type="button" id="nextBtn">Next</button>
     </div>
 
-    <div id="passStep" style="display:none;">
-      <input id="password" type="password" placeholder="Enter password" required>
-      <div class="error" id="passErr"></div>
+    <!-- Step 2: Password -->
+    <div id="passwordStep" style="display:none;">
+      <input id="password" type="password" placeholder="Enter your password" required />
+      <div class="error" id="pwError" style="display:none"></div>
       <button class="btn" type="submit">Sign in</button>
+      <div class="small"><a href="#" style="color:var(--accent);">Forgot password?</a></div>
     </div>
   </form>
 
-  <footer>Need help? <a href="#">Contact support</a></footer>
+  <footer>
+    Need an account? <a href="#">Request access</a>
+  </footer>
 </section>
 
+<!-- ✅ Success popup -->
 <div id="popup">✅ Login Successful!</div>
 
 <script>
-  const emailStep=document.getElementById("emailStep");
-  const passStep=document.getElementById("passStep");
-  const nextBtn=document.getElementById("nextBtn");
-  const emailInput=document.getElementById("email");
-  const passInput=document.getElementById("password");
-  const passErr=document.getElementById("passErr");
-  const popup=document.getElementById("popup");
+  const nextBtn = document.getElementById("nextBtn");
+  const emailStep = document.getElementById("emailStep");
+  const passwordStep = document.getElementById("passwordStep");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const emailError = document.getElementById("emailError");
+  const pwError = document.getElementById("pwError");
+  const popup = document.getElementById("popup");
 
-  nextBtn.onclick=()=>{
-    const email=emailInput.value.trim();
-    if(!email){
-      document.getElementById("emailErr").textContent="Please enter your email.";
+  // Step 1 — Show password input
+  nextBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      emailError.textContent = "Please enter your email.";
+      emailError.style.display = "block";
       return;
     }
-    document.getElementById("emailErr").textContent="";
-    emailStep.style.display="none";
-    passStep.style.display="block";
-    passInput.focus();
-  };
+    emailError.style.display = "none";
+    emailStep.style.display = "none";
+    passwordStep.style.display = "block";
+    passwordInput.focus();
+  });
 
-  document.getElementById("loginForm").onsubmit=async(e)=>{
+  // Step 2 — Login attempts
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    passErr.textContent="";
-    const email=emailInput.value.trim();
-    const password=passInput.value.trim();
+    pwError.style.display = "none";
 
-    const res=await fetch("/login",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({username:email,password})
-    });
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    if(res.ok){
-      showPopup(email);
-      setTimeout(()=>window.location="/dashboard.html",2000);
-    }else{
-      const msg=await res.text();
-      passErr.textContent=msg;
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password })
+      });
+
+      if (res.ok) {
+        showPopup(email);
+        setTimeout(() => window.location.href = "/dashboard.html", 2000);
+      } else {
+        const msg = await res.text();
+        pwError.textContent = msg;
+        pwError.style.display = "block";
+      }
+    } catch {
+      pwError.textContent = "Network error. Please try again.";
+      pwError.style.display = "block";
     }
-  };
+  });
 
-  function showPopup(email){
-    popup.textContent=`✅ Welcome back, ${email}!`;
-    popup.style.display="block";
-    setTimeout(()=>popup.style.opacity=1,50);
-    setTimeout(()=>{
-      popup.style.opacity=0;
-      setTimeout(()=>popup.style.display="none",600);
-    },1600);
+  function showPopup(email) {
+    popup.textContent = `✅ Welcome back, ${email}!`;
+    popup.style.display = "block";
+    setTimeout(() => popup.style.opacity = 1, 50);
+    setTimeout(() => {
+      popup.style.opacity = 0;
+      setTimeout(() => popup.style.display = "none", 600);
+    }, 1600);
   }
 </script>
 </body>
